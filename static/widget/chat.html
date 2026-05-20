@@ -111,8 +111,27 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);height:100vh
 
 <script>
 const API = window.location.origin + '/api/v1';
-let sessionId = null;
+let sessionId = localStorage.getItem('vcg_widget_session');
 let sending = false;
+
+// URL 参数支持品牌配置
+const params = new URLSearchParams(window.location.search);
+if (params.get('primary')) document.documentElement.style.setProperty('--primary', '#' + params.get('primary'));
+if (params.get('title')) document.querySelector('.header .info .name').textContent = params.get('title');
+
+// 如果有历史会话，恢复
+if (sessionId) {
+  fetch(`${API}/sessions/${sessionId}/history`)
+    .then(r => r.json())
+    .then(data => {
+      const msgs = data.memory || [];
+      if (msgs.length) {
+        const welcome = document.querySelector('.welcome');
+        if (welcome) welcome.remove();
+        msgs.forEach(m => addMessage(m.role === 'user' ? 'user' : 'assistant', m.content));
+      }
+    }).catch(() => {});
+}
 
 function sendQuick(text) {
   document.getElementById('userInput').value = text;
@@ -147,6 +166,7 @@ async function sendMessage() {
       addMessage('assistant', `抱歉，系统出错了：${data.detail || '请稍后重试'}`);
     } else {
       sessionId = data.session_id;
+      localStorage.setItem('vcg_widget_session', sessionId);
       addMessage('assistant', data.response);
     }
   } catch (err) {

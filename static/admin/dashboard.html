@@ -57,7 +57,8 @@ tr:hover td{background:#f8fafc}
 
 <div class="sidebar">
   <h2>🏛️ 门神景区<small>Agent Hub 管理后台</small></h2>
-  <div class="nav-item active" data-tab="kb" onclick="switchTab('kb')">📖 <span>知识库管理</span></div>
+  <div class="nav-item active" data-tab="overview" onclick="switchTab('overview')">🏠 <span>概览</span></div>
+  <div class="nav-item" data-tab="kb" onclick="switchTab('kb')">📖 <span>知识库管理</span></div>
   <div class="nav-item" data-tab="unanswered" onclick="switchTab('unanswered')">❓ <span>未命中问题</span><span class="badge" id="unansweredBadge" style="display:none">0</span></div>
   <div class="nav-item" data-tab="sessions" onclick="switchTab('sessions')">💬 <span>对话记录</span></div>
   <div class="nav-item" data-tab="reviews" onclick="switchTab('reviews')">👁️ <span>审核队列</span></div>
@@ -74,8 +75,22 @@ tr:hover td{background:#f8fafc}
     <div class="user">管理员 · <button onclick="logout()">退出</button></div>
   </div>
 
+  <!-- Tab: 概览 -->
+  <div class="tab-content active" id="tab-overview">
+    <div class="card">
+      <h3>系统运行概览</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px" id="statsCards">
+        <div class="empty-state">加载中...</div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>最近对话</h3>
+      <div id="recentSessions"><div class="empty-state">加载中...</div></div>
+    </div>
+  </div>
+
   <!-- Tab: 知识库管理 -->
-  <div class="tab-content active" id="tab-kb">
+  <div class="tab-content" id="tab-kb">
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <h3>景区常见问题（FAQ）</h3>
@@ -175,8 +190,9 @@ function switchTab(name) {
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   document.querySelector(`[data-tab="${name}"]`).classList.add('active');
-  const titles = { kb: '知识库管理', unanswered: '未命中问题', sessions: '对话记录', reviews: '审核队列', scenic: '景区配置', stats: '热门统计' };
+  const titles = { overview: '系统概览', kb: '知识库管理', unanswered: '未命中问题', sessions: '对话记录', reviews: '审核队列', scenic: '景区配置', stats: '热门统计' };
   document.getElementById('pageTitle').textContent = titles[name] || name;
+  if (name === 'overview') loadOverview();
   if (name === 'kb') loadKb();
   if (name === 'unanswered') loadUnanswered();
   if (name === 'sessions') loadSessions();
@@ -327,7 +343,80 @@ async function loadSessions() {
 }
 
 function viewSession(sid) {
-  alert(`会话 ID: ${sid}\n查看历史对话请调用 API:\nGET /api/v1/sessions/${sid}/history`);
+  // 查看会话详情 — 在新区域展开
+  loadSessionHistory(sid);
+}
+
+// ── 概览 ──
+
+async function loadOverview() {
+  try {
+    const [stats, sessions] = await Promise.all([
+      api('/admin/stats'),
+      api('/sessions?limit=5'),
+    ]);
+    document.getElementById('statsCards').innerHTML = [
+      { label: '总对话数', value: stats.total_sessions, icon: '💬', color: '#6366f1' },
+      { label: '待审核', value: stats.pending_reviews, icon: '👁️', color: '#f59e0b' },
+      { label: '知识库条目', value: stats.kb_count, icon: '📖', color: '#10b981' },
+      { label: '未命中问题', value: stats.pending_unanswered, icon: '❓', color: '#ef4444' },
+    ].map(s => `<div style="background:${s.color}10;border:1px solid ${s.color}30;border-radius:10px;padding:16px;text-align:center">
+      <div style="font-size:28px;margin-bottom:4px">${s.icon}</div>
+      <div style="font-size:28px;font-weight:700;color:${s.color}">${s.value}</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:2px">${s.label}</div>
+    </div>`).join('');
+    
+    renderRecentSessions(sessions);
+  } catch { /* */ }
+}
+
+function renderRecentSessions(sessions) {
+  const el = document.getElementById('recentSessions');
+  if (!sessions.length) { el.innerHTML = '<div class="empty-state">暂无对话</div>'; return; }
+  el.innerHTML = `<table><thead><tr><th>会话 ID</th><th>用户</th><th>更新时间</th><th>操作</th></tr></thead><tbody>${sessions.map(s => `
+    <tr>
+      <td style="font-family:monospace;font-size:11px">${s.session_id}</td>
+      <td>${s.user_id || '-'}</td>
+      <td>${s.updated_at || '-'}</td>
+      <td><button class="btn-edit" onclick="viewSession('${s.session_id}')">查看</button></td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+// ── 对话详情（弹窗） ──
+
+let sessionDetailOpen = false;
+
+function loadSessionHistory(sid) {
+  document.getElementById('sessionDetailContent').innerHTML = '<div class="empty-state">加载中...</div>';
+  document.getElementById('sessionDetail').style.display = 'block';
+  sessionDetailOpen = true;
+  loadSessionMessages(sid);
+}
+
+async function loadSessionMessages(sid) {
+  try {
+    const resp = await fetch(`${API}/sessions/${sid}/history`);
+    const data = await resp.json();
+    const msgs = data.memory || [];
+    const el = document.getElementById('sessionDetailContent');
+    if (!msgs.length) { el.innerHTML = '<div class="empty-state">暂无对话消息</div>'; return; }
+    el.innerHTML = `<div style="margin-bottom:8px;font-size:12px;color:var(--text2)">会话: ${sid} · ${data.turn_count || 0} 轮对话</div>
+    <div style="max-height:400px;overflow-y:auto">${msgs.map(m => `
+      <div style="margin-bottom:8px;display:flex;${m.role === 'user' ? 'justify-content:flex-end' : ''}">
+        <div style="max-width:80%;padding:8px 14px;border-radius:12px;font-size:13px;line-height:1.6;
+          ${m.role === 'user' ? 'background:#6366f1;color:#fff;border-bottom-right-radius:4px' : 'background:#f1f5f9;border:1px solid var(--border);border-bottom-left-radius:4px'}">
+          <div style="font-size:10px;opacity:.6;margin-bottom:2px">${m.role === 'user' ? '游客' : 'AI 客服'}</div>
+          ${escape(m.content || '')}
+        </div>
+      </div>`).join('')}</div>`;
+  } catch {
+    document.getElementById('sessionDetailContent').innerHTML = '<div class="empty-state">加载失败</div>';
+  }
+}
+
+function closeSessionDetail() {
+  document.getElementById('sessionDetail').style.display = 'none';
+  sessionDetailOpen = false;
 }
 
 // ── 审核队列 ──
@@ -372,5 +461,17 @@ function escape(str) {
 // ── 初始化 ──
 loadKb();
 </script>
+
+<!-- 会话详情弹窗 -->
+<div id="sessionDetail" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:1000;display:none;align-items:center;justify-content:center" onclick="if(event.target===this)closeSessionDetail()">
+  <div style="background:#fff;border-radius:12px;width:640px;max-width:90vw;max-height:80vh;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.2)">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border)">
+      <h3 style="font-size:15px">💬 对话详情</h3>
+      <button onclick="closeSessionDetail()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text2)">✕</button>
+    </div>
+    <div id="sessionDetailContent" style="padding:16px 20px;max-height:70vh;overflow-y:auto"></div>
+  </div>
+</div>
+
 </body>
 </html>

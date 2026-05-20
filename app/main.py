@@ -385,6 +385,25 @@ def update_scenic_config(request: Request, items: List[ScenicConfigItem]):
     return {"message": f"已更新 {count} 项配置"}
 
 
+# ── 系统统计数据 ──────────────────────────────────────────────
+
+
+@app.get(f"{settings.api_prefix}/admin/stats")
+def admin_stats(request: Request):
+    """系统运行统计：会话数、审核数、知识库数等。"""
+    _require_admin(request)
+    sessions = session_store.list_sessions(limit=10000)
+    reviews = review_queue.list_pending(limit=10000)
+    kb_items = knowledge_base.list_all(enabled_only=True)
+    unanswered = unanswered_tracker.list_pending(limit=10000)
+    return {
+        "total_sessions": len(sessions),
+        "pending_reviews": len(reviews),
+        "kb_count": len(kb_items),
+        "pending_unanswered": len(unanswered),
+    }
+
+
 # ── 管理后台静态页面 ────────────────────────────────────────
 
 
