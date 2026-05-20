@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>刘红武 - AI应用工程师简历</title>
+    <style>
+        :root {
+            --primary-black: #000000;
+            --secondary-gray: #4a4a4a;
+            --border-color: #e0e0e0;
+            --bg-color: #ffffff;
+            --accent: #2563eb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+            color: #333;
+            background-color: #525659;
+            line-height: 1.5;
+            font-size: 14px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 35px 45px;
+            margin: 30px auto;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 28px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 18px;
+        }
+
+        .header-left h1 {
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+            color: var(--primary-black);
+        }
+
+        .header-left .title-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .header-left h2 {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--secondary-gray);
+        }
+
+        .header-left .tagline {
+            font-size: 12px;
+            color: var(--accent);
+            font-weight: 600;
+            background: #eff6ff;
+            padding: 2px 10px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        .header-right {
+            text-align: right;
+            font-size: 13px;
+            color: #333;
+            line-height: 1.8;
+            display: flex;
+            gap: 30px;
+        }
+
+        .contact-column {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .section {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #000;
+            margin-bottom: 12px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #eee;
+            letter-spacing: 1px;
+        }
+
+        .content-list li {
+            list-style: none;
+            position: relative;
+            padding-left: 12px;
+            margin-bottom: 5px;
+            text-align: justify;
+            color: #333;
+        }
+
+        .content-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+            font-weight: bold;
+        }
+
+        .bold-text {
+            font-weight: 700;
+            color: #000;
+        }
+
+        .job-block {
+            margin-bottom: 22px;
+            page-break-inside: avoid;
+        }
+
+        .job-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 3px;
+        }
+
+        .company-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #000;
+        }
+
+        .job-time {
+            font-size: 12px;
+            color: #666;
+            font-family: Consolas, monospace;
+        }
+
+        .job-role-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .job-role {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .job-desc-list {
+            margin-bottom: 4px;
+        }
+
+        .job-desc-list li {
+            list-style: none;
+            position: relative;
+            padding-left: 12px;
+            margin-bottom: 4px;
+            font-size: 13.5px;
+            color: #444;
+            line-height: 1.55;
+            text-align: justify;
+        }
+
+        .job-desc-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+            font-weight: bold;
+        }
+
+        .result-tag {
+            display: inline-block;
+            background: #f0fdf4;
+            color: #166534;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 1px 7px;
+            border-radius: 8px;
+            margin-left: 4px;
+        }
+
+        .project-tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 6px 0 10px 0;
+        }
+
+        .project-tech-tag {
+            background: #f3f4f6;
+            color: #374151;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .project-highlight {
+            border-left: 3px solid var(--accent);
+            padding-left: 12px;
+            margin: 8px 0;
+            font-size: 13px;
+            color: #1e40af;
+            font-weight: 500;
+        }
+
+        .skill-item {
+            margin-bottom: 10px;
+        }
+
+        .skill-category {
+            font-weight: 700;
+            font-size: 13.5px;
+            color: #000;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .skill-list li {
+            list-style: none;
+            position: relative;
+            padding-left: 12px;
+            margin-bottom: 3px;
+            font-size: 13.5px;
+            color: #444;
+            line-height: 1.55;
+            text-align: justify;
+        }
+
+        .skill-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+            font-weight: bold;
+        }
+
+        .skill-list strong {
+            color: #000;
+            font-weight: 600;
+        }
+
+        .edu-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3px;
+            font-size: 14px;
+        }
+
+        .edu-school { font-weight: 700; }
+        .edu-meta { color: #666; font-size: 13px; }
+
+        .tags-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .tag-row {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 12px;
+            overflow: hidden;
+        }
+
+        .tag-label {
+            background: #f5f5f5;
+            padding: 5px 10px;
+            color: #333;
+            font-weight: 600;
+            border-right: 1px solid #ddd;
+            width: 80px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .tag-content {
+            padding: 5px 12px;
+            color: #555;
+            flex: 1;
+        }
+
+        .footer {
+            margin-top: 30px;
+            border-top: 1px dashed #ddd;
+            padding-top: 12px;
+        }
+
+        .footer-title {
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 3px;
+            color: #333;
+        }
+
+        .footer-text {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .icon {
+            width: 13px;
+            height: 13px;
+            fill: none;
+            stroke: #555;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            vertical-align: text-bottom;
+        }
+
+        @media print {
+            body { background: white; }
+            .page { 
+                margin: 0; 
+                box-shadow: none; 
+                width: 100%;
+                max-width: 100%;
+                padding: 25px 35px;
+            }
+            @page { 
+                margin: 0; 
+                size: A4;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <header class="header">
+            <div class="header-left">
+                <h1>刘红武</h1>
+                <div class="title-row">
+                    <h2>AI应用工程师</h2>
+                    <span class="tagline">独立交付 4 个完整 AI Web 项目</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="contact-column">
+                    <div class="contact-item">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                        武汉
+                    </div>
+                    <div class="contact-item">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                        1462882928@qq.com
+                    </div>
+                    <div class="contact-item">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                        15926061773
+                    </div>
+                </div>
+                <div class="contact-column">
+                    <div class="contact-item">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                        G10S7H21
+                    </div>
+                    <div class="contact-item">
+                        <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                        1996/09
+                    </div>
+                    <div class="contact-item">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                        <a href="https://github.com/GassamFlower" style="color: inherit; text-decoration: none; border-bottom: 1px solid #ccc;">Github</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="section">
+            <div class="section-title">核心定位</div>
+            <ul class="content-list">
+                <li><span class="bold-text">运维底座 + AI 转型（7年→AI）：</span>拥有扎实的系统排错与稳定性保障经验，已转型为 AI 应用工程师。熟悉 LangGraph、CrewAI 等多智能体架构与 Dify RAG 知识库建设，能独立完成从架构设计到部署交付的全链路闭环。日常借助 Cursor、Claude Code、Trae 等 AI 编程工具进行项目级开发，累计独立交付 4 个完整 Web 项目。</li>
+                <li><span class="bold-text">Agent 全栈能力：</span>覆盖「需求分析 → 多智能体架构设计 → FastAPI 网关开发 → Dify RAG 知识库 → Vue3 前端 / 小程序 → Docker / PyInstaller 部署」全链条，具备端到端敏捷交付经验。</li>
+                <li><span class="bold-text">工程方法论驱动：</span>掌握控制论思维（每步验证结果、发现偏差立即纠正），具备标准化项目管理体系（五角色分阶段交付），能将 AI Agent 从概念稳健推进到可运行状态。</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <div class="section-title">工作经历</div>
+
+            <div class="job-block">
+                <div class="job-title-row">
+                    <span class="company-name">汉吉福文化产业（湖北）有限公司</span>
+                    <span class="job-time">2025/05 - 2026/05</span>
+                </div>
+                <div class="job-role-row">
+                    <span class="job-role">AI应用工程师</span>
+                    <span style="font-size: 12px; color: #888;">武汉</span>
+                </div>
+                <ul class="job-desc-list">
+                    <li><span class="bold-text">多智能体架构设计与落地：</span>主导基于 <strong>LangGraph</strong> 与 <strong>CrewAI</strong> 的多智能体系统研发，构建包含对话记忆(Memory)、状态流转(Stateful)、意图路由及人工接管(Human-in-the-loop)的核心中枢，赋能全渠道智能客服、内容生产与运营。<span class="result-tag">独立全栈</span></li>
+                    <li><span class="bold-text">知识库与 RAG 体系建设：</span>基于 <strong>Dify</strong> 搭建企业级 RAG 知识库，采用全文与向量混合检索并引入 Rerank 机制，清洗并结构化数万字业务语料，大幅降低大模型幻觉。<span class="result-tag">问答准确率 90%+</span></li>
+                    <li><span class="bold-text">系统对接与 Tool Calling 开发：</span>使用 FastAPI 搭建核心网关，部署运维 <strong>OpenClaw、Hermes</strong> 等智能体网关/工具链，封装票务、电商等业务系统 API，赋予智能体执行真实业务操作（查票、核销）的能力，实现业务闭环。</li>
+                    <li><span class="bold-text">视频批量混剪平台（VideoClipGroup）：</span>独立设计落地面向新媒体团队的 Web 混剪工具（Vue3 + FastAPI + FFmpeg + faster-whisper），支持任务表批量管理、语音识别、字幕合成与成片导出；完成内网部署与 PyInstaller 免环境分发。<span class="result-tag">独立全栈</span></li>
+                    <li><span class="bold-text">自动化工作流与全栈交付：</span>结合 Coze / n8n 搭建自动化发布与引流监控工作流；完成微信小程序（WebSocket）及 Vue3 运营后台的前后端开发。熟练使用 Cursor、Claude Code、Trae 等工具加速全流程迭代。</li>
+                </ul>
+            </div>
+
+            <div class="job-block">
+                <div class="job-title-row">
+                    <span class="company-name">南京通达海科技股份有限公司</span>
+                    <span class="job-time">2018.04 - 2025.01</span>
+                </div>
+                <div class="job-role-row">
+                    <span class="job-role">IT技术支持工程师</span>
+                    <span style="font-size: 12px; color: #888;">武汉</span>
+                </div>
+                <ul class="job-desc-list">
+                    <li><span class="bold-text">系统运维与自动化：</span>负责法院业务系统（含政务数据库）的程序部署、补丁升级及服务器安全维护；编写自动化脚本实现资源监控与安全巡检，保障 7×24 小时系统稳定性。</li>
+                    <li><span class="bold-text">数据平台与 SQL 优化：</span>为用户量身构建数据分析平台，精通数据备份恢复、SQL 性能调优，维护 ETL 数据流水线，执行数据清洗、迁移及报表指标体系搭建。</li>
+                    <li><span class="bold-text">接口网关与对接：</span>负责网关中心维护，精细整理接口文档，高效对接并调试所有第三方公司接口；深入用户调研撰写需求文档，提供现场培训与售后支持。</li>
+                    <li><span class="bold-text">测试与质量保障：</span>主导测试环境搭建、接口测试、性能测试及自动化脚本测试，形成标准化回归流程，保障系统迭代质量。</li>
+                </ul>
+            </div>
+
+            <div class="job-block">
+                <div class="job-title-row">
+                    <span class="company-name">广州市力融计算机有限公司 / 武汉烽火普天信息技术有限公司</span>
+                    <span class="job-time">2016.12 - 2018.01</span>
+                </div>
+                <div class="job-role-row">
+                    <span class="job-role">运维工程师 / 数据开发实习生</span>
+                    <span style="font-size: 12px; color: #888;">深圳 / 武汉</span>
+                </div>
+                <ul class="job-desc-list">
+                    <li>门户平台建设维护，Oracle 数据库运维优化；维护数据爬虫程序，参与数据清洗及 Java 数据开发脚本编写。</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-title">项目经验</div>
+
+            <div class="job-block">
+                <div class="job-title-row">
+                    <span class="company-name">门神文化景区 · LangGraph 多智能体运营中枢</span>
+                    <span class="job-time">2025.05 - 2025.08</span>
+                </div>
+                <div class="job-role-row">
+                    <span class="job-role">核心开发者 / AI 应用架构（独立全栈落地）</span>
+                    <span style="font-size: 12px; color: #888;">12 周交付</span>
+                </div>
+                <div class="project-tech-tags">
+                    <span class="project-tech-tag">LangGraph</span>
+                    <span class="project-tech-tag">CrewAI</span>
+                    <span class="project-tech-tag">Dify (RAG)</span>
+                    <span class="project-tech-tag">FastAPI</span>
+                    <span class="project-tech-tag">OpenClaw / Hermes</span>
+                    <span class="project-tech-tag">Coze / n8n</span>
+                    <span class="project-tech-tag">微信小程序</span>
+                    <span class="project-tech-tag">Vue3</span>
+                </div>
+                <div class="project-highlight">已完成从架构设计 → 代码开发 → 部署验证的全链路闭环</div>
+                <div style="font-size: 13.5px; color: #444; line-height: 1.55; text-align: justify; margin-bottom: 10px;">
+                    面向文旅行业的多智能体系统，通过统一 AI 大脑串联微信小程序、公众号、抖音与 Web 端，实现智能客服、内容自动化生产、研学接待、票务闭环及文创电商导购的一体化服务。
+                </div>
+                <ul class="job-desc-list">
+                    <li><span class="bold-text">中枢架构：</span>采用 <strong>LangGraph</strong> 设计包含对话记忆、状态流转及 Human-in-the-loop 的中枢图结构；开发 FastAPI 网关实现意图识别与工作流路由分发。</li>
+                    <li><span class="bold-text">多智能体协同：</span>基于 <strong>CrewAI</strong> 定制 6 大垂直角色智能体（客服、内容运营、研学、票务、电商、管理后台），精确角色设定保障协同效率。</li>
+                    <li><span class="bold-text">RAG 知识库：</span>在 <strong>Dify</strong> 中构建混合检索（BM25+向量+Rerank）知识库，清洗数万字景区语料，有效解决大模型幻觉问题。</li>
+                    <li><span class="bold-text">工具链集成：</span>封装景区票务系统接口（OpenClaw / API Tool Calling），实现"咨询-推荐-购票-核销"闭环；对接微信小程序 WebSocket 实时对话，Coze 搭建抖音矩阵自动化流。</li>
+                </ul>
+            </div>
+
+            <div class="job-block">
+                <div class="job-title-row">
+                    <span class="company-name">VideoClipGroup · 视频批量混剪 Web 平台</span>
+                    <span class="job-time">2026.01 - 2026.05</span>
+                </div>
+                <div class="job-role-row">
+                    <span class="job-role">独立开发者（全栈 + 打包分发）</span>
+                    <span style="font-size: 12px; color: #888;">持续迭代</span>
+                </div>
+                <div class="project-tech-tags">
+                    <span class="project-tech-tag">Vue3 + Vite + TypeScript</span>
+                    <span class="project-tech-tag">FastAPI + Uvicorn</span>
+                    <span class="project-tech-tag">FFmpeg</span>
+                    <span class="project-tech-tag">faster-whisper</span>
+                    <span class="project-tech-tag">PyInstaller</span>
+                </div>
+                <div style="font-size: 13.5px; color: #444; line-height: 1.55; text-align: justify; margin-bottom: 10px;">
+                    面向短视频运营 / 知识博主 / 电商投放的批量视频处理工具。浏览器管理素材 + 任务表，程序自动给视频加字幕、贴片、语音识别，导出成片。支持 Web 模式多机共享和 PyInstaller 打包免环境分发。
+                </div>
+                <ul class="job-desc-list">
+                    <li><span class="bold-text">全栈架构：</span>Vue 3 + Element Plus 构建任务看板与设置中心；FastAPI 提供 REST / WebSocket 接口；faster-whisper 实现 ASR 字幕识别，FFmpeg 完成字幕烧录、贴片叠加与可选 GPU 编码，支持视频×贴片组合批量渲染。</li>
+                    <li><span class="bold-text">多工作区与内网部署：</span>设计多工作区切换、健康检查与就绪探针（/api/system/ready）；支持局域网多机访问及生产环境安全口令配置，保障团队内网稳定协作。</li>
+                    <li><span class="bold-text">免环境分发：</span>PyInstaller 打包为独立可执行程序，配置 / 素材 / 成片与 exe 同级管理。配合 Cursor / Claude Code 持续迭代，将单条短视频后期流程从数小时压缩至分钟级。</li>
+                </ul>
+            </div>
+
+            <div class="job-block">
+                <div class="job-title-row">
+                    <span class="company-name">门神文旅 · 游客体验调研与智能报告系统</span>
+                    <span class="job-time">2026.02 - 2026.04</span>
+                </div>
+                <div class="job-role-row">
+                    <span class="job-role">核心开发者（AI Pipeline 设计）</span>
+                    <span style="font-size: 12px; color: #888;">独立完成</span>
+                </div>
+                <div class="project-tech-tags">
+                    <span class="project-tech-tag">LangGraph Agent</span>
+                    <span class="project-tech-tag">FastAPI</span>
+                    <span class="project-tech-tag">Vue3</span>
+                    <span class="project-tech-tag">LLM Pipeline</span>
+                    <span class="project-tech-tag">统计分析</span>
+                </div>
+                <div style="font-size: 13.5px; color: #444; line-height: 1.55; text-align: justify; margin-bottom: 10px;">
+                    面向文旅景区的游客体验分析智能体：运营人员上传满意度问卷链接 + 自然语言需求 → AI 自动解析问卷 → 参数化仿真游客行为数据 → 统计验证 → 一键生成运营报告 + 数据看板。采用自校验闭环（Simulate → Validate → Repair）确保数据质量。
+                </div>
+                <ul class="job-desc-list">
+                    <li>设计多 Agent Pipeline（问卷解析 → 需求分析 → 游客行为仿真 → 统计验证 → 报告生成），实现 LLM 驱动的全自动调研分析流程。</li>
+                    <li>内置自校验循环（最多 5 轮迭代），支持 Cronbach α、KMO、Bartlett 等学术统计检验，结果生成运营报告 + Excel 数据交付件。</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-title">专业技能</div>
+            
+            <div class="skill-item">
+                <span class="skill-category">1. AI 应用架构与智能体开发 ★ 核心能力</span>
+                <ul class="skill-list">
+                    <li><strong>多智能体编排：</strong>熟练掌握 <strong>LangGraph</strong> 状态图架构，能设计复杂的循环工作流与意图路由，实现带对话记忆与人工审核(Human-in-the-loop)的中枢系统；精通 <strong>CrewAI</strong> 框架，能进行精确的角色设定(Role Prompting)与任务协同调度。</li>
+                    <li><strong>知识库与 RAG 落地：</strong>精通 <strong>Dify</strong> 知识库构建，熟练应用数据分块(Chunking)、混合检索(BM25+Vector)与重排(Rerank)策略，能有效解决大模型幻觉问题，保障垂直领域问答的高置信度。</li>
+                    <li><strong>Tool Calling 与智能体网关：</strong>具备 <strong>OpenClaw、Hermes</strong> 等智能体网关的部署与运维经验，熟练使用 <strong>FastAPI</strong> 封装业务接口供 AI 调用；掌握 <strong>Coze / n8n</strong> 构建跨平台自动化流水线。</li>
+                </ul>
+            </div>
+
+            <div class="skill-item">
+                <span class="skill-category">2. 全栈开发与工程落地 ★ 独立交付能力</span>
+                <ul class="skill-list">
+                    <li><strong>后端与 API 网关：</strong>熟练使用 <strong>Python / FastAPI</strong> 开发高性能 API 网关，精通 RESTful 与 WebSocket 长连接通信，具备业务系统对接、鉴权及并发限流经验。</li>
+                    <li><strong>前端开发：</strong>熟练运用 <strong>Cursor、Claude Code、Trae</strong> 等 AI 编程工具进行项目级开发与代码审查，独立完成基于 <strong>Vue 3 + Vite + Element Plus</strong> 的后台管理看板及 <strong>微信小程序</strong> 全链路迭代。</li>
+                    <li><strong>可交付能力：</strong>累计独立完成 4 个完整 Web 项目（后端 API + 前端 SPA + 打包/部署），涵盖 AI Agent、视频处理、自动化问卷等不同领域。熟练使用 PyInstaller、Docker 交付生产级产物。</li>
+                </ul>
+            </div>
+
+            <div class="skill-item">
+                <span class="skill-category">3. 运维底座（7 年积累）</span>
+                <ul class="skill-list">
+                    <li>精通 Linux / Windows 服务器运维、Docker 容器化部署、Git 版本控制、MySQL / Oracle / SQL Server 数据库管理。</li>
+                    <li>具备系统排错、性能优化、安全巡检、数据备份恢复等生产级保障能力。</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-title">教育经历</div>
+            <div class="edu-row">
+                <span class="edu-school">武汉软件工程职业学院 | 软件技术</span>
+                <span class="job-time">2014.09 - 2017.07</span>
+            </div>
+            <div class="edu-meta" style="margin-top: 3px;">大专。核心课程：Java、JavaScript、SQL Server、Web 应用系统开发、软件测试。</div>
+        </section>
+
+        <section class="section">
+            <div class="section-title">标签</div>
+            <div class="tags-container">
+                <div class="tag-row">
+                    <span class="tag-label">硬技能</span>
+                    <div class="tag-content">LangGraph · CrewAI · Dify RAG · FastAPI · Vue3 · 微信小程序 · Docker · OpenClaw / Hermes · Cursor / Claude Code / Trae</div>
+                </div>
+                <div class="tag-row">
+                    <span class="tag-label">软技能</span>
+                    <div class="tag-content">端到端交付 · 7 年运维 → AI 转型背景 · 工程控制论思维 · 快速学习 · 跨团队协作</div>
+                </div>
+                <div class="tag-row">
+                    <span class="tag-label">方向</span>
+                    <div class="tag-content">多智能体系统 · RAG 知识库 · AI Agent 落地 · 自动化工作流 · 文旅 / 教育垂直行业</div>
+                </div>
+            </div>
+        </section>
+
+        <div class="footer">
+            <div class="footer-title">更多信息</div>
+            <div class="footer-text">GitHub: https://github.com/GassamFlower · AI Agent 方法论知识库：https://github.com/GassamFlower/ai-agent-methodology · 项目 Demo 可面谈演示</div>
+        </div>
+    </div>
+</body>
+</html>

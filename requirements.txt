@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+langgraph
+pydantic
+pydantic-settings
+python-dotenv
+litellm
+crewai
+crewai-tools
+langchain-openai

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>门神景区 · 管理后台</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--sidebar:1f2937;--sidebar-hover:374151;--primary:6366f1;--bg:f1f5f9;--card:fff;--text:1e293b;--text2:64748b;--border:e2e8f0;--success:10b981;--warning:f59e0b;--danger:ef4444}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex}
+.sidebar{width:220px;background:#1e293b;color:#fff;padding:20px 0;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:10}
+.sidebar h2{font-size:16px;padding:0 20px 16px;border-bottom:1px solid #374151;margin-bottom:12px}
+.sidebar h2 small{display:block;font-size:11px;font-weight:400;color:#94a3b8;margin-top:3px}
+.nav-item{padding:10px 20px;cursor:pointer;font-size:14px;color:#cbd5e1;display:flex;align-items:center;gap:8px;transition:all .15s}
+.nav-item:hover{background:#374151;color:#fff}
+.nav-item.active{background:#374151;color:#fff;border-right:3px solid #6366f1}
+.nav-item .badge{background:#ef4444;color:#fff;font-size:10px;padding:0 6px;border-radius:8px;margin-left:auto}
+.main{margin-left:220px;flex:1;padding:24px;min-height:100vh}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.topbar h1{font-size:22px}
+.topbar .user{font-size:13px;color:var(--text2)}
+.topbar button{background:none;border:1px solid var(--border);padding:6px 14px;border-radius:6px;cursor:pointer;font-size:12px;color:var(--text2)}
+.topbar button:hover{background:var(--border)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.card{background:#fff;border-radius:10px;padding:20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.card h3{font-size:15px;margin-bottom:12px;color:var(--text)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{padding:10px 8px;text-align:left;font-weight:600;color:var(--text2);border-bottom:2px solid var(--border);font-size:12px}
+td{padding:10px 8px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.5}
+td .kw{display:inline-block;background:#e0e7ff;color:#4338ca;padding:1px 8px;border-radius:4px;font-size:11px;margin:1px}
+tr:hover td{background:#f8fafc}
+.actions{display:flex;gap:4px}
+.actions button{padding:4px 10px;border:none;border-radius:4px;cursor:pointer;font-size:12px}
+.btn-edit{background:#dbeafe;color:#2563eb}.btn-del{background:#fee2e2;color:#dc2626}.btn-toggle{background:#f1f5f9;color:#475569}
+.btn-add-row{margin-top:12px;padding:8px 16px;background:#6366f1;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px}
+.btn-add-row:hover{opacity:.9}
+.btn-sm{padding:4px 10px;border:none;border-radius:4px;cursor:pointer;font-size:12px}
+.btn-resolve{background:#dcfce7;color:#166534}
+.form-row{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.form-row input,.form-row select,.form-row textarea{padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;outline:none}
+.form-row input:focus,.form-row textarea:focus{border-color:var(--primary)}
+.form-row input{flex:1;min-width:120px}
+.form-row textarea{flex:2;min-width:200px;resize:vertical;min-height:60px}
+.form-actions{display:flex;gap:8px;margin-top:4px}
+.form-actions button{padding:6px 16px;border:none;border-radius:6px;cursor:pointer;font-size:13px}
+.btn-save{background:#6366f1;color:#fff}.btn-cancel{background:#f1f5f9;color:#475569}
+.add-form{display:none;background:#f8fafc;border-radius:8px;padding:16px;margin-top:12px;border:1px solid var(--border)}
+.add-form.show{display:block}
+.empty-state{text-align:center;padding:40px;color:var(--text2);font-size:14px}
+.tag{display:inline-block;padding:1px 8px;border-radius:4px;font-size:11px;font-weight:500}
+.tag-pending{background:#fef3c7;color:#92400e}.tag-resolved{background:#dcfce7;color:#166534}
+@media(max-width:768px){.sidebar{width:60px}.sidebar h2{display:none}.sidebar .nav-item span{display:none}.main{margin-left:60px}.form-row{flex-direction:column}}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>🏛️ 门神景区<small>Agent Hub 管理后台</small></h2>
+  <div class="nav-item active" data-tab="kb" onclick="switchTab('kb')">📖 <span>知识库管理</span></div>
+  <div class="nav-item" data-tab="unanswered" onclick="switchTab('unanswered')">❓ <span>未命中问题</span><span class="badge" id="unansweredBadge" style="display:none">0</span></div>
+  <div class="nav-item" data-tab="sessions" onclick="switchTab('sessions')">💬 <span>对话记录</span></div>
+  <div class="nav-item" data-tab="reviews" onclick="switchTab('reviews')">👁️ <span>审核队列</span></div>
+  <div class="nav-item" data-tab="scenic" onclick="switchTab('scenic')">⚙️ <span>景区配置</span></div>
+  <div class="nav-item" data-tab="stats" onclick="switchTab('stats')">📊 <span>热门统计</span></div>
+  <div style="margin-top:auto;padding:20px">
+    <div class="nav-item" onclick="logout()">🚪 <span>退出登录</span></div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <h1 id="pageTitle">知识库管理</h1>
+    <div class="user">管理员 · <button onclick="logout()">退出</button></div>
+  </div>
+
+  <!-- Tab: 知识库管理 -->
+  <div class="tab-content active" id="tab-kb">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h3>景区常见问题（FAQ）</h3>
+        <button class="btn-add-row" onclick="toggleAddForm()">＋ 新增条目</button>
+      </div>
+      <div class="add-form" id="addForm">
+        <div class="form-row">
+          <input type="text" id="newKeywords" placeholder="关键词（逗号分隔，如 开放时间,营业时间）">
+          <input type="text" id="newQuestion" placeholder="问题（如 景区几点开门？）">
+        </div>
+        <div class="form-row">
+          <textarea id="newAnswer" placeholder="标准回答"></textarea>
+        </div>
+        <div class="form-row">
+          <input type="text" id="newCategory" placeholder="分类（如 票务/交通/服务）" value="通用">
+        </div>
+        <div class="form-actions">
+          <button class="btn-save" onclick="addKbItem()">保存</button>
+          <button class="btn-cancel" onclick="toggleAddForm()">取消</button>
+        </div>
+      </div>
+      <div id="kbTableWrap"><div class="empty-state">加载中...</div></div>
+    </div>
+  </div>
+
+  <!-- Tab: 未命中问题 -->
+  <div class="tab-content" id="tab-unanswered">
+    <div class="card">
+      <h3>Agent 无法回答的问题</h3>
+      <div id="unansweredTableWrap"><div class="empty-state">加载中...</div></div>
+    </div>
+  </div>
+
+  <!-- Tab: 对话记录 -->
+  <div class="tab-content" id="tab-sessions">
+    <div class="card">
+      <h3>最近对话记录</h3>
+      <div id="sessionsTableWrap"><div class="empty-state">加载中...</div></div>
+    </div>
+  </div>
+
+  <!-- Tab: 审核队列 -->
+  <div class="tab-content" id="tab-reviews">
+    <div class="card">
+      <h3>待人工审核的请求</h3>
+      <div id="reviewsTableWrap"><div class="empty-state">加载中...</div></div>
+    </div>
+  </div>
+
+  <!-- Tab: 景区配置 -->
+  <div class="tab-content" id="tab-scenic">
+    <div class="card">
+      <h3>景区运营配置</h3>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:16px">修改后立即生效，Agent 回复将自动使用最新配置。</p>
+      <div id="scenicConfigWrap"><div class="empty-state">加载中...</div></div>
+      <div style="margin-top:12px">
+        <button class="btn-add-row" onclick="saveScenicConfig()">💾 保存所有修改</button>
+        <span id="scenicSaveMsg" style="margin-left:12px;font-size:13px;color:var(--success);display:none">已保存</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab: 热门统计 -->
+  <div class="tab-content" id="tab-stats">
+    <div class="card">
+      <h3>热门问题 Top 10</h3>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:12px">按知识库命中次数排序，反映游客最关心的话题。</p>
+      <div id="hotQuestionsWrap"><div class="empty-state">加载中...</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = window.location.origin + '/api/v1';
+let editingId = null;
+
+function getToken() {
+  const t = localStorage.getItem('admin_token');
+  if (!t) window.location.href = '/admin/login.html';
+  return t;
+}
+
+function headers() {
+  return { 'Content-Type': 'application/json', 'X-Admin-Token': getToken() };
+}
+
+async function api(path, opts = {}) {
+  const resp = await fetch(API + path, { headers: headers(), ...opts });
+  if (resp.status === 401) { localStorage.removeItem('admin_token'); window.location.href = '/admin/login.html'; }
+  if (!resp.ok) throw new Error((await resp.json()).detail || '请求失败');
+  return resp.json();
+}
+
+// ── 标签切换 ──
+function switchTab(name) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.querySelector(`[data-tab="${name}"]`).classList.add('active');
+  const titles = { kb: '知识库管理', unanswered: '未命中问题', sessions: '对话记录', reviews: '审核队列', scenic: '景区配置', stats: '热门统计' };
+  document.getElementById('pageTitle').textContent = titles[name] || name;
+  if (name === 'kb') loadKb();
+  if (name === 'unanswered') loadUnanswered();
+  if (name === 'sessions') loadSessions();
+  if (name === 'reviews') loadReviews();
+  if (name === 'scenic') loadScenicConfig();
+  if (name === 'stats') loadHotQuestions();
+}
+
+// ── 知识库 ──
+async function loadKb() {
+  const data = await api('/admin/knowledge');
+  const wrap = document.getElementById('kbTableWrap');
+  if (!data.length) { wrap.innerHTML = '<div class="empty-state">暂无知识库条目，点击"新增条目"添加</div>'; return; }
+  wrap.innerHTML = `<table><thead><tr><th>ID</th><th>关键词</th><th>问题</th><th>回答</th><th>分类</th><th>命中</th><th>状态</th><th>操作</th></tr></thead><tbody>${data.map(r => `
+    <tr>
+      <td>${r.id}</td>
+      <td>${(r.keywords || '').split(',').map(k => `<span class="kw">${k.trim()}</span>`).join('')}</td>
+      <td style="max-width:200px">${escape(r.question)}</td>
+      <td style="max-width:300px">${escape((r.answer || '').substring(0, 80))}${(r.answer || '').length > 80 ? '...' : ''}</td>
+      <td><span class="kw">${r.category}</span></td>
+      <td>${r.hit_count}</td>
+      <td>${r.enabled ? '<span style="color:var(--success)">启用</span>' : '<span style="color:var(--text2)">停用</span>'}</td>
+      <td class="actions">
+        <button class="btn-edit" onclick="editKb(${r.id})">编辑</button>
+        <button class="btn-toggle" onclick="toggleKb(${r.id},${r.enabled})">${r.enabled ? '停用' : '启用'}</button>
+        <button class="btn-del" onclick="deleteKb(${r.id})">删除</button>
+      </td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+async function addKbItem() {
+  const keywords = document.getElementById('newKeywords').value.trim();
+  const question = document.getElementById('newQuestion').value.trim();
+  const answer = document.getElementById('newAnswer').value.trim();
+  const category = document.getElementById('newCategory').value.trim() || '通用';
+  if (!keywords || !question || !answer) { alert('请填写关键词、问题和回答'); return; }
+  await api('/admin/knowledge', { method: 'POST', body: JSON.stringify({ keywords, question, answer, category }) });
+  toggleAddForm(); loadKb();
+}
+
+async function toggleKb(id, current) {
+  await api(`/admin/knowledge/${id}`, { method: 'PUT', body: JSON.stringify({ enabled: current ? 0 : 1 }) });
+  loadKb();
+}
+
+async function deleteKb(id) {
+  if (!confirm('确认删除此条目？')) return;
+  await api(`/admin/knowledge/${id}`, { method: 'DELETE' });
+  loadKb();
+}
+
+function editKb(id) { alert('编辑功能通过新窗口或直接调用 API 实现。当前 MVP 阶段支持：停用/启用/删除。'); }
+
+function toggleAddForm() {
+  document.getElementById('addForm').classList.toggle('show');
+  if (!document.getElementById('addForm').classList.contains('show')) {
+    document.getElementById('newKeywords').value = '';
+    document.getElementById('newQuestion').value = '';
+    document.getElementById('newAnswer').value = '';
+    document.getElementById('newCategory').value = '通用';
+  }
+}
+
+// ── 未命中问题 ──
+async function loadUnanswered() {
+  const data = await api('/admin/unanswered');
+  const wrap = document.getElementById('unansweredTableWrap');
+  document.getElementById('unansweredBadge').textContent = data.length;
+  document.getElementById('unansweredBadge').style.display = data.length ? 'inline' : 'none';
+  if (!data.length) { wrap.innerHTML = '<div class="empty-state">暂无未命中问题 🎉</div>'; return; }
+  wrap.innerHTML = `<table><thead><tr><th>次数</th><th>问题</th><th>意图</th><th>时间</th><th>操作</th></tr></thead><tbody>${data.map(r => `
+    <tr>
+      <td><span class="kw">${r.count}次</span></td>
+      <td style="max-width:400px">${escape(r.query)}</td>
+      <td>${r.intent || '-'}</td>
+      <td>${r.created_at || '-'}</td>
+      <td><button class="btn-resolve" onclick="resolveUnanswered(${r.id})">标为已处理</button>
+        <button class="btn-edit" onclick="convertToFaq(${r.id})" style="margin-left:4px">转为FAQ</button></td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+async function resolveUnanswered(id) {
+  await api(`/admin/unanswered/${id}/resolve`, { method: 'POST' });
+  loadUnanswered();
+}
+
+async function convertToFaq(id) {
+  if (!confirm('确认将该问题转为知识库条目（需手动补充标准答案）？')) return;
+  const data = await api(`/admin/unanswered/${id}/to-faq`, { method: 'POST' });
+  alert(`✅ 已转为知识库条目（ID: ${data.id}），请在「知识库管理」中编辑补充标准答案。`);
+  loadUnanswered();
+}
+
+// ── 景区配置 ──
+
+async function loadScenicConfig() {
+  const data = await api('/admin/scenic-config');
+  const wrap = document.getElementById('scenicConfigWrap');
+  window._scenicConfig = data;
+  if (!data.length) { wrap.innerHTML = '<div class="empty-state">暂无配置项</div>'; return; }
+  wrap.innerHTML = `<table><thead><tr><th style="width:120px">配置项</th><th>值</th></tr></thead><tbody>${data.map((r, i) => `
+    <tr>
+      <td><strong>${r.label || r.key}</strong><br><span style="font-size:11px;color:var(--text2)">${r.key}</span></td>
+      <td><input type="text" id="scenic_${r.key}" value="${escape(r.value)}" style="width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;outline:none" onfocus="this.style.borderColor='#6366f1'" onblur="this.style.borderColor='var(--border)'"></td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+async function saveScenicConfig() {
+  if (!window._scenicConfig) return;
+  const items = window._scenicConfig.map(r => ({
+    key: r.key,
+    value: document.getElementById(`scenic_${r.key}`).value.trim(),
+  }));
+  await api('/admin/scenic-config', { method: 'PUT', body: JSON.stringify(items) });
+  const msg = document.getElementById('scenicSaveMsg');
+  msg.style.display = 'inline';
+  setTimeout(() => { msg.style.display = 'none'; }, 3000);
+}
+
+// ── 热门统计 ──
+
+async function loadHotQuestions() {
+  const data = await api('/admin/hot-questions?limit=10');
+  const wrap = document.getElementById('hotQuestionsWrap');
+  if (!data.length) { wrap.innerHTML = '<div class="empty-state">暂无数据</div>'; return; }
+  wrap.innerHTML = `<table><thead><tr><th style="width:40px">#</th><th>问题</th><th>分类</th><th>命中次数</th><th>状态</th></tr></thead><tbody>${data.map((r, i) => `
+    <tr>
+      <td style="font-weight:700;color:${i < 3 ? '#dc2626' : 'var(--text)'}">${i + 1}</td>
+      <td style="max-width:300px">${escape(r.question)}</td>
+      <td><span class="kw">${r.category}</span></td>
+      <td><strong>${r.hit_count}</strong> 次</td>
+      <td>${r.enabled ? '<span style="color:var(--success)">启用</span>' : '<span style="color:var(--text2)">停用</span>'}</td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+// ── 对话记录 ──
+async function loadSessions() {
+  const data = await api('/sessions?limit=30');
+  const wrap = document.getElementById('sessionsTableWrap');
+  if (!data.length) { wrap.innerHTML = '<div class="empty-state">暂无对话记录</div>'; return; }
+  wrap.innerHTML = `<table><thead><tr><th>会话 ID</th><th>用户</th><th>最后更新</th><th>操作</th></tr></thead><tbody>${data.map(s => `
+    <tr>
+      <td style="font-family:monospace;font-size:11px">${s.session_id}</td>
+      <td>${s.user_id || '-'}</td>
+      <td>${s.updated_at || '-'}</td>
+      <td><button class="btn-edit" onclick="viewSession('${s.session_id}')">查看历史</button></td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+function viewSession(sid) {
+  alert(`会话 ID: ${sid}\n查看历史对话请调用 API:\nGET /api/v1/sessions/${sid}/history`);
+}
+
+// ── 审核队列 ──
+async function loadReviews() {
+  const data = await api('/reviews?limit=30');
+  const wrap = document.getElementById('reviewsTableWrap');
+  if (!data.length) { wrap.innerHTML = '<div class="empty-state">暂无待审核项</div>'; return; }
+  wrap.innerHTML = `<table><thead><tr><th>审核单号</th><th>用户</th><th>问题</th><th>意图</th><th>时间</th><th>操作</th></tr></thead><tbody>${data.map(r => `
+    <tr>
+      <td style="font-family:monospace;font-size:11px">${r.review_id}</td>
+      <td>${r.user_id || '-'}</td>
+      <td style="max-width:300px">${escape((r.query || '').substring(0, 60))}</td>
+      <td><span class="kw">${r.intent}</span></td>
+      <td>${r.created_at || '-'}</td>
+      <td class="actions">
+        <button class="btn-edit" onclick="completeReview('${r.review_id}',true)">✓ 通过</button>
+        <button class="btn-del" onclick="completeReview('${r.review_id}',false)">✗ 驳回</button>
+      </td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+async function completeReview(rid, approved) {
+  await api(`/reviews/${rid}/complete`, {
+    method: 'POST',
+    body: JSON.stringify({ approved, reviewer_note: approved ? '管理后台审核通过' : '管理后台审核驳回' }),
+  });
+  loadReviews();
+}
+
+function logout() {
+  localStorage.removeItem('admin_token');
+  window.location.href = '/admin/login.html';
+}
+
+function escape(str) {
+  if (!str) return '';
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+// ── 初始化 ──
+loadKb();
+</script>
+</body>
+</html>

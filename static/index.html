@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Hub · 智能体测试中心</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#f0f2f5;--card:#fff;--primary:#4f46e5;--primary-light:#e0e7ff;--text:#1e293b;--text-secondary:#64748b;--border:#e2e8f0;--success:#10b981;--warning:#f59e0b;--danger:#ef4444;--radius:12px}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+header{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+header h1{font-size:20px;font-weight:600;letter-spacing:1px}
+header .subtitle{font-size:13px;opacity:.8;margin-top:2px}
+header .status{display:flex;align-items:center;gap:8px;font-size:13px}
+header .dot{width:8px;height:8px;border-radius:50%;background:#10b981;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.main{flex:1;display:flex;overflow:hidden}
+.sidebar{width:280px;background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
+.sidebar h3{padding:16px 16px 8px;font-size:13px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1px}
+.scenario-group{padding:0 8px 12px}
+.scenario-btn{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border:none;background:none;border-radius:8px;cursor:pointer;text-align:left;font-size:13px;color:var(--text);transition:all .15s}
+.scenario-btn:hover{background:var(--primary-light);color:var(--primary)}
+.scenario-btn .icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.scenario-btn .label{font-weight:500}
+.scenario-btn .desc{font-size:11px;color:var(--text-secondary);margin-top:2px}
+.icon-ticket{background:#dbeafe;color:#2563eb}.icon-study{background:#dcfce7;color:#16a34a}.icon-cs{background:#fef3c7;color:#d97706}.icon-content{background:#fce7f3;color:#db2777}.icon-ecom{background:#ede9fe;color:#7c3aed}.icon-admin{background:#f1f5f9;color:#475569}
+.chat-area{flex:1;display:flex;flex-direction:column;min-width:0}
+.messages{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:16px}
+.msg{max-width:75%;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.msg.user{align-self:flex-end}
+.msg.assistant{align-self:flex-start}
+.msg .bubble{padding:12px 16px;border-radius:16px;font-size:14px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.msg.user .bubble{background:var(--primary);color:#fff;border-bottom-right-radius:4px}
+.msg.assistant .bubble{background:var(--card);border:1px solid var(--border);border-bottom-left-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.msg .meta{font-size:11px;color:var(--text-secondary);margin-top:4px;padding:0 4px;display:flex;gap:12px;flex-wrap:wrap}
+.msg .meta .tag{background:var(--primary-light);color:var(--primary);padding:1px 8px;border-radius:10px;font-weight:500}
+.msg.assistant .meta{text-align:left}
+.msg.user .meta{text-align:right;justify-content:flex-end}
+.typing{align-self:flex-start;padding:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:16px;border-bottom-left-radius:4px;font-size:14px;color:var(--text-secondary);display:none}
+.typing.show{display:block}
+.typing span{animation:blink 1.4s infinite both}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+.input-area{padding:16px 24px;background:var(--card);border-top:1px solid var(--border)}
+.input-row{display:flex;gap:10px;align-items:flex-end}
+.input-row textarea{flex:1;border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;font-size:14px;font-family:inherit;resize:none;min-height:46px;max-height:120px;outline:none;transition:border-color .2s}
+.input-row textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.1)}
+.input-row button{height:46px;padding:0 24px;border:none;border-radius:var(--radius);background:var(--primary);color:#fff;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .2s}
+.input-row button:hover{background:#4338ca}
+.input-row button:disabled{opacity:.5;cursor:not-allowed}
+.controls{display:flex;gap:16px;margin-top:10px;flex-wrap:wrap;align-items:center}
+.controls label{font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:4px;cursor:pointer}
+.controls input[type=checkbox]{accent-color:var(--primary)}
+.controls .session-tag{font-size:11px;background:#f1f5f9;padding:2px 8px;border-radius:6px;color:var(--text-secondary)}
+.right-panel{width:320px;background:var(--card);border-left:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column}
+.panel-section{padding:16px;border-bottom:1px solid var(--border)}
+.panel-section h4{font-size:12px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.panel-section .kv{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid #f1f5f9}
+.panel-section .kv .k{color:var(--text-secondary)}
+.panel-section .kv .v{font-weight:500;max-width:180px;word-break:break-all;text-align:right}
+.panel-section .kv .v.intent{color:var(--primary);font-weight:600}
+.review-panel{padding:16px}
+.review-panel .empty{font-size:13px;color:var(--text-secondary);text-align:center;padding:20px 0}
+.review-item{background:#fefce8;border:1px solid #fde68a;border-radius:8px;padding:12px;margin-bottom:8px;font-size:13px}
+.review-item .rid{font-weight:600;color:#92400e;margin-bottom:4px}
+.review-actions{display:flex;gap:8px;margin-top:8px}
+.review-actions button{padding:4px 12px;border-radius:6px;font-size:12px;border:none;cursor:pointer;font-weight:500}
+.btn-approve{background:#dcfce7;color:#166534}.btn-approve:hover{background:#bbf7d0}
+.btn-reject{background:#fee2e2;color:#991b1b}.btn-reject:hover{background:#fecaca}
+.clear-btn{margin:8px 16px;padding:8px;border:1px dashed var(--border);border-radius:8px;background:none;color:var(--text-secondary);font-size:12px;cursor:pointer;transition:all .15s}
+.clear-btn:hover{border-color:var(--danger);color:var(--danger)}
+.welcome{text-align:center;padding:60px 40px;color:var(--text-secondary)}
+.welcome h2{font-size:24px;color:var(--text);margin-bottom:12px}
+.welcome p{font-size:14px;line-height:1.8;max-width:500px;margin:0 auto}
+@media(max-width:1024px){.sidebar,.right-panel{display:none}.chat-area{width:100%}}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>🏛️ Agent Hub · 智能体测试中心</h1>
+    <div class="subtitle">门神文化景区 · LangGraph + CrewAI 多智能体运营中枢</div>
+  </div>
+  <div class="status"><div class="dot"></div>服务运行中 · <span id="apiBase">127.0.0.1:8000</span></div>
+</header>
+
+<div class="main">
+  <!-- 左侧：快捷测试场景 -->
+  <div class="sidebar">
+    <h3>🎯 快捷测试场景</h3>
+    <div class="scenario-group">
+      <button class="scenario-btn" onclick="quickSend('明天的门票还有吗？多少钱一张？')">
+        <div class="icon icon-ticket">🎫</div>
+        <div><div class="label">票务查询</div><div class="desc">查票价、余票</div></div>
+      </button>
+      <button class="scenario-btn" onclick="quickSend('帮我买两张明天去门神博物馆的票')">
+        <div class="icon icon-ticket">🎫</div>
+        <div><div class="label">票务下单</div><div class="desc">购票流程</div></div>
+      </button>
+      <button class="scenario-btn" onclick="quickSend('有什么适合8岁孩子的研学课程推荐？')">
+        <div class="icon icon-study">📚</div>
+        <div><div class="label">研学咨询</div><div class="desc">课程推荐</div></div>
+      </button>
+      <button class="scenario-btn" onclick="quickSend('景区几点开门？停车场在哪里？')">
+        <div class="icon icon-cs">💬</div>
+        <div><div class="label">通用客服</div><div class="desc">开放时间、地址等</div></div>
+      </button>
+      <button class="scenario-btn" onclick="quickSend('退票怎么操作？')">
+        <div class="icon icon-cs">💬</div>
+        <div><div class="label">退改签咨询</div><div class="desc">退票规则</div></div>
+      </button>
+      <button class="scenario-btn" onclick="quickSend('帮我写一段门神文化的抖音短视频文案，要国潮风格的')">
+        <div class="icon icon-content">✍️</div>
+        <div><div class="label">抖音文案</div><div class="desc">短视频脚本</div></div>
+      </button>
+      <button class="scenario-btn" onclick="quickSend('写一篇关于门神年画的公众号推文大纲')">
+        <div class="icon icon-content">✍️</div>
+        <div><div class="label">公众号推文</div><div class="desc">长图文创作</div></div>
+      </button>
+      <button class="scenario-btn" onclick="quickSend('有什么门神主题的纪念品推荐？')">
+        <div class="icon icon-ecom">🛒</div>
+        <div><div class="label">文创推荐</div><div class="desc">纪念品导购</div></div>
+      </button>
+      <button class="scenario-btn" onclick="quickSend('查一下我的文创订单 ORD-20260401 物流到哪了')">
+        <div class="icon icon-ecom">🛒</div>
+        <div><div class="label">订单物流</div><div class="desc">物流查询</div></div>
+      </button>
+      <button class="scenario-btn" onclick="quickSend('给我看今天的运营日报')">
+        <div class="icon icon-admin">📊</div>
+        <div><div class="label">运营日报</div><div class="desc">数据统计</div></div>
+      </button>
+      <button class="scenario-btn" onclick="quickSend('本周的GMV和退款率是多少？')">
+        <div class="icon icon-admin">📊</div>
+        <div><div class="label">运营指标</div><div class="desc">数据分析</div></div>
+      </button>
+    </div>
+
+    <h3>⚡ 特殊场景</h3>
+    <div class="scenario-group">
+      <button class="scenario-btn" onclick="testUnauth()">
+        <div class="icon" style="background:#fee2e2;color:#dc2626">🔒</div>
+        <div><div class="label">未登录拦截</div><div class="desc">测试登录校验</div></div>
+      </button>
+      <button class="scenario-btn" onclick="testReview()">
+        <div class="icon" style="background:#fef3c7;color:#d97706">👁️</div>
+        <div><div class="label">人工审核</div><div class="desc">触发 HITL 流程</div></div>
+      </button>
+      <button class="scenario-btn" onclick="quickSend('今天天气真好啊')">
+        <div class="icon" style="background:#f1f5f9;color:#64748b">❓</div>
+        <div><div class="label">意图不明</div><div class="desc">测试 unknown 兜底</div></div>
+      </button>
+    </div>
+
+    <button class="clear-btn" onclick="clearChat()">🗑️ 清空对话 · 新建会话</button>
+  </div>
+
+  <!-- 中间：聊天区 -->
+  <div class="chat-area">
+    <div class="messages" id="messages">
+      <div class="welcome">
+        <h2>👋 欢迎使用 Agent Hub 测试中心</h2>
+        <p>左侧选择快捷场景，或直接输入问题开始对话。<br>
+        系统会自动识别意图并分发给对应的智能体处理。<br><br>
+        当前支持 6 类智能体：<br>
+        🎫 票务 · 📚 研学 · 💬 客服 · ✍️ 内容运营 · 🛒 文创电商 · 📊 管理后台</p>
+      </div>
+    </div>
+    <div class="typing" id="typing"><span>●</span><span>●</span><span>●</span> 智能体思考中...</div>
+
+    <div class="input-area">
+      <div class="input-row">
+        <textarea id="userInput" rows="1" placeholder="输入你的问题..." onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        <button id="sendBtn" onclick="sendMessage()">发 送</button>
+      </div>
+      <div class="controls">
+        <label><input type="checkbox" id="authCheck" checked> 已登录</label>
+        <label><input type="checkbox" id="reviewCheck"> 需人工审核</label>
+        <label>用户ID: <input type="text" id="userId" value="u001" style="width:60px;border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:12px"></label>
+        <span class="session-tag" id="sessionTag">会话: 新会话</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 右侧：响应详情 & 审核 -->
+  <div class="right-panel">
+    <div class="panel-section">
+      <h4>📋 最近响应详情</h4>
+      <div id="responseDetail">
+        <div style="font-size:13px;color:var(--text-secondary);text-align:center;padding:20px 0">发送消息后显示详情</div>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <h4>💾 会话信息</h4>
+      <div id="sessionInfo">
+        <div class="kv"><span class="k">会话 ID</span><span class="v" id="infoSessionId">-</span></div>
+        <div class="kv"><span class="k">对话轮数</span><span class="v" id="infoTurns">0</span></div>
+        <div class="kv"><span class="k">用户 ID</span><span class="v" id="infoUserId">u001</span></div>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <h4>👁️ 待审核列表</h4>
+      <div id="reviewList"><div class="empty">暂无待审核项</div></div>
+      <button class="clear-btn" onclick="loadReviews()" style="margin:8px 0 0">🔄 刷新审核列表</button>
+    </div>
+
+    <div class="panel-section">
+      <h4>📜 历史会话</h4>
+      <div id="sessionList"><div class="empty">暂无历史会话</div></div>
+      <button class="clear-btn" onclick="loadSessions()" style="margin:8px 0 0">🔄 刷新会话列表</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = window.location.origin;
+let sessionId = null;
+let turnCount = 0;
+let sending = false;
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+function quickSend(text) {
+  document.getElementById('userInput').value = text;
+  document.getElementById('authCheck').checked = true;
+  document.getElementById('reviewCheck').checked = false;
+  sendMessage();
+}
+
+function testUnauth() {
+  document.getElementById('authCheck').checked = false;
+  document.getElementById('userInput').value = '我想买票';
+  sendMessage();
+}
+
+function testReview() {
+  document.getElementById('authCheck').checked = true;
+  document.getElementById('reviewCheck').checked = true;
+  document.getElementById('userInput').value = '帮我退掉昨天的门票';
+  sendMessage();
+}
+
+async function sendMessage() {
+  if (sending) return;
+  const input = document.getElementById('userInput');
+  const query = input.value.trim();
+  if (!query) return;
+
+  sending = true;
+  document.getElementById('sendBtn').disabled = true;
+  input.value = '';
+  autoResize(input);
+
+  const userId = document.getElementById('userId').value || 'u001';
+  const authenticated = document.getElementById('authCheck').checked;
+  const requireReview = document.getElementById('reviewCheck').checked;
+
+  addMessage('user', query);
+  showTyping(true);
+
+  const startTime = Date.now();
+
+  try {
+    const body = { user_id: userId, query, authenticated, require_human_review: requireReview, metadata: {} };
+    if (sessionId) body.session_id = sessionId;
+
+    const resp = await fetch(`${API}/api/v1/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    const data = await resp.json();
+    const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+
+    if (!resp.ok) {
+      addMessage('assistant', `❌ 请求失败: ${data.detail || JSON.stringify(data)}`, { error: true });
+    } else {
+      sessionId = data.session_id;
+      turnCount = Math.floor((data.memory?.length || 0) / 2);
+
+      addMessage('assistant', data.response, {
+        intent: data.intent,
+        elapsed,
+        reviewId: data.review_id,
+        error: data.error,
+      });
+
+      updateDetail(data, elapsed);
+      updateSessionInfo();
+
+      if (data.review_id) loadReviews();
+    }
+  } catch (err) {
+    addMessage('assistant', `❌ 网络错误: ${err.message}\n\n请确认服务正在运行 (uvicorn app.main:app --reload)`, { error: true });
+  }
+
+  showTyping(false);
+  sending = false;
+  document.getElementById('sendBtn').disabled = false;
+  input.focus();
+}
+
+function addMessage(role, text, opts = {}) {
+  const container = document.getElementById('messages');
+  const welcome = container.querySelector('.welcome');
+  if (welcome) welcome.remove();
+
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+
+  let metaHtml = '';
+  if (role === 'assistant' && opts.intent) {
+    const intentMap = { ticket:'🎫 票务', study:'📚 研学', customer_service:'💬 客服', content:'✍️ 内容', ecommerce:'🛒 电商', admin:'📊 管理', unknown:'❓ 未识别' };
+    metaHtml += `<span class="tag">${intentMap[opts.intent] || opts.intent}</span>`;
+  }
+  if (opts.elapsed) metaHtml += `<span>⏱ ${opts.elapsed}s</span>`;
+  if (opts.reviewId) metaHtml += `<span>📋 审核: ${opts.reviewId}</span>`;
+  if (opts.error) metaHtml += `<span style="color:var(--danger)">⚠ ${typeof opts.error === 'string' ? opts.error : '错误'}</span>`;
+
+  div.innerHTML = `<div class="bubble">${escapeHtml(text)}</div>${metaHtml ? `<div class="meta">${metaHtml}</div>` : ''}`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function showTyping(show) {
+  document.getElementById('typing').classList.toggle('show', show);
+  if (show) {
+    const container = document.getElementById('messages');
+    container.scrollTop = container.scrollHeight;
+  }
+}
+
+function updateDetail(data, elapsed) {
+  const el = document.getElementById('responseDetail');
+  const intentMap = { ticket:'🎫 票务', study:'📚 研学', customer_service:'💬 客服', content:'✍️ 内容运营', ecommerce:'🛒 文创电商', admin:'📊 管理后台', unknown:'❓ 未识别' };
+  const ctx = data.context || {};
+  el.innerHTML = `
+    <div class="kv"><span class="k">意图分类</span><span class="v intent">${intentMap[data.intent] || data.intent}</span></div>
+    <div class="kv"><span class="k">响应耗时</span><span class="v">${elapsed}s</span></div>
+    <div class="kv"><span class="k">会话 ID</span><span class="v" style="font-size:11px">${data.session_id}</span></div>
+    <div class="kv"><span class="k">记忆条数</span><span class="v">${data.memory?.length || 0}</span></div>
+    <div class="kv"><span class="k">智能体类型</span><span class="v">${ctx.agent_type || '-'}</span></div>
+    ${data.review_id ? `<div class="kv"><span class="k">审核单号</span><span class="v" style="color:var(--warning)">${data.review_id}</span></div>` : ''}
+    ${data.error ? `<div class="kv"><span class="k">错误</span><span class="v" style="color:var(--danger)">${data.error}</span></div>` : ''}
+  `;
+}
+
+function updateSessionInfo() {
+  document.getElementById('infoSessionId').textContent = sessionId || '-';
+  document.getElementById('infoTurns').textContent = turnCount;
+  document.getElementById('infoUserId').textContent = document.getElementById('userId').value;
+  document.getElementById('sessionTag').textContent = `会话: ${sessionId ? sessionId.substring(0, 14) + '...' : '新会话'}`;
+}
+
+function clearChat() {
+  sessionId = null;
+  turnCount = 0;
+  document.getElementById('messages').innerHTML = `
+    <div class="welcome">
+      <h2>👋 新会话已创建</h2>
+      <p>选择左侧场景或直接输入问题开始对话。</p>
+    </div>`;
+  updateSessionInfo();
+  document.getElementById('responseDetail').innerHTML = '<div style="font-size:13px;color:var(--text-secondary);text-align:center;padding:20px 0">发送消息后显示详情</div>';
+  document.getElementById('reviewCheck').checked = false;
+}
+
+async function loadReviews() {
+  try {
+    const resp = await fetch(`${API}/api/v1/reviews`);
+    const data = await resp.json();
+    const el = document.getElementById('reviewList');
+    if (!data.length) { el.innerHTML = '<div class="empty">暂无待审核项</div>'; return; }
+    el.innerHTML = data.slice(0, 10).map(r => `
+      <div class="review-item">
+        <div class="rid">${r.review_id}</div>
+        <div>意图: ${r.intent} · 用户: ${r.user_id}</div>
+        <div style="margin-top:4px;color:#64748b">「${(r.query || '').substring(0, 50)}」</div>
+        <div class="review-actions">
+          <button class="btn-approve" onclick="completeReview('${r.review_id}',true)">✓ 通过</button>
+          <button class="btn-reject" onclick="completeReview('${r.review_id}',false)">✗ 驳回</button>
+        </div>
+      </div>
+    `).join('');
+  } catch (e) { console.error(e); }
+}
+
+async function completeReview(rid, approved) {
+  try {
+    await fetch(`${API}/api/v1/reviews/${rid}/complete`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ approved, reviewer_note: approved ? '测试通过' : '测试驳回' }),
+    });
+    loadReviews();
+  } catch (e) { console.error(e); }
+}
+
+async function loadSessions() {
+  try {
+    const resp = await fetch(`${API}/api/v1/sessions?limit=10`);
+    const data = await resp.json();
+    const el = document.getElementById('sessionList');
+    if (!data.length) { el.innerHTML = '<div class="empty">暂无历史会话</div>'; return; }
+    el.innerHTML = data.map(s => `
+      <div class="kv" style="cursor:pointer" onclick="loadSessionHistory('${s.session_id}')">
+        <span class="k" style="font-size:11px">${s.session_id.substring(0, 16)}...</span>
+        <span class="v" style="font-size:11px">${s.user_id}</span>
+      </div>
+    `).join('');
+  } catch (e) { console.error(e); }
+}
+
+async function loadSessionHistory(sid) {
+  try {
+    const resp = await fetch(`${API}/api/v1/sessions/${sid}/history`);
+    const data = await resp.json();
+    sessionId = sid;
+    turnCount = data.turn_count || 0;
+
+    const container = document.getElementById('messages');
+    container.innerHTML = '';
+    (data.memory || []).forEach(m => {
+      addMessage(m.role === 'user' ? 'user' : 'assistant', m.content);
+    });
+    updateSessionInfo();
+  } catch (e) { console.error(e); }
+}
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+loadReviews();
+loadSessions();
+</script>
+</body>
+</html>

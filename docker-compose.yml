@@ -1,0 +1,32 @@
+# ============================================================
+# Agent Hub · Docker Compose
+#
+# 快速启动：
+#   docker-compose up -d
+#
+# 访问：
+#   - 对话 API:      http://localhost:8000/api/v1/chat
+#   - API 文档:       http://localhost:8000/docs
+#   - 测试页面:       http://localhost:8000/
+#   - 管理后台:       http://localhost:8000/admin/login.html
+#   - 嵌入小部件:     http://localhost:8000/widget/chat.html
+# ============================================================
+
+services:
+  agent-hub:
+    build: .
+    container_name: agent-hub
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      # 持久化数据（会话、知识库、审核记录）
+      - ./data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

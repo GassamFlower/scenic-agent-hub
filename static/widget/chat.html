@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 景区助手</title>
+<style>
+/* ════════════════════════════════════════════════════════════
+   门神景区 · AI 智能客服嵌入组件
+   品牌色通过 CSS 变量配置，嵌入时直接修改变量值即可
+
+   嵌入方式：
+   <iframe src="/widget/chat.html"
+     width="100%" height="600" frameborder="0"
+     style="border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.1)">
+   </iframe>
+   ════════════════════════════════════════════════════════════ */
+
+:root {
+  --primary: #4f46e5;
+  --primary-light: #e0e7ff;
+  --bg: #ffffff;
+  --text: #1e293b;
+  --text-secondary: #64748b;
+  --border: #e2e8f0;
+  --radius: 12px;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --header-bg: linear-gradient(135deg, #4f46e5, #7c3aed);
+  --header-text: #ffffff;
+  --bubble-user: #4f46e5;
+  --bubble-user-text: #ffffff;
+  --bubble-assistant: #f1f5f9;
+  --bubble-assistant-text: #1e293b;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+.header{background:var(--header-bg);color:var(--header-text);padding:12px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.header .avatar{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:18px}
+.header .info{flex:1}
+.header .info .name{font-size:14px;font-weight:600}
+.header .info .status{font-size:11px;opacity:.8;display:flex;align-items:center;gap:4px}
+.header .info .dot{width:6px;height:6px;border-radius:50%;background:#10b981;display:inline-block}
+
+.messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.msg{max-width:85%;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg.user{align-self:flex-end}
+.msg.assistant{align-self:flex-start}
+.msg .bubble{padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.msg.user .bubble{background:var(--bubble-user);color:var(--bubble-user-text);border-bottom-right-radius:4px}
+.msg.assistant .bubble{background:var(--bubble-assistant);color:var(--bubble-assistant-text);border-bottom-left-radius:4px;border:1px solid var(--border)}
+.msg .time{font-size:10px;color:var(--text-secondary);margin-top:2px;padding:0 4px}
+
+.welcome{text-align:center;padding:32px 20px;color:var(--text-secondary)}
+.welcome .icon{font-size:36px;margin-bottom:8px}
+.welcome h3{font-size:15px;color:var(--text);margin-bottom:6px}
+.welcome p{font-size:12px;line-height:1.7}
+
+.quick-reply{display:flex;flex-wrap:wrap;gap:6px;padding:8px 16px 4px;flex-shrink:0}
+.quick-reply button{padding:6px 12px;border:1px solid var(--border);border-radius:16px;background:var(--bg);font-size:12px;color:var(--text);cursor:pointer;white-space:nowrap;transition:all .15s}
+.quick-reply button:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+
+.input-area{padding:8px 12px 12px;border-top:1px solid var(--border);flex-shrink:0}
+.input-row{display:flex;gap:8px}
+.input-row input{flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:20px;font-size:13px;font-family:var(--font);outline:none;transition:border-color .2s}
+.input-row input:focus{border-color:var(--primary)}
+.input-row button{width:40px;height:40px;border:none;border-radius:50%;background:var(--primary);color:#fff;font-size:16px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:opacity .2s}
+.input-row button:disabled{opacity:.5;cursor:not-allowed}
+
+.typing{align-self:flex-start;padding:10px 14px;background:var(--bubble-assistant);border:1px solid var(--border);border-radius:14px;border-bottom-left-radius:4px;font-size:13px;display:none}
+.typing.show{display:block}
+.typing span{animation:blink 1.4s infinite both}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="avatar">🏛️</div>
+  <div class="info">
+    <div class="name">门神景区 AI 助手</div>
+    <div class="status"><span class="dot"></span>在线 · 随时为您服务</div>
+  </div>
+</div>
+
+<div class="quick-reply">
+  <button onclick="sendQuick('景区几点开门？')">🕐 开放时间</button>
+  <button onclick="sendQuick('门票多少钱？')">🎫 门票价格</button>
+  <button onclick="sendQuick('怎么去景区？')">🚗 交通路线</button>
+  <button onclick="sendQuick('有停车场吗？')">🅿️ 停车</button>
+</div>
+
+<div class="messages" id="messages">
+  <div class="welcome">
+    <div class="icon">🏛️</div>
+    <h3>您好！我是门神景区的 AI 助手</h3>
+    <p>我可以帮您解答开放时间、门票价格、交通路线、研学活动等问题。<br>也可以帮您查询票务信息和推荐游览路线。</p>
+  </div>
+</div>
+<div class="typing" id="typing"><span>●</span><span>●</span><span>●</span> 正在输入...</div>
+
+<div class="input-area">
+  <div class="input-row">
+    <input type="text" id="userInput" placeholder="输入您的问题..." onkeydown="if(event.key==='Enter')sendMessage()">
+    <button id="sendBtn" onclick="sendMessage()">➤</button>
+  </div>
+</div>
+
+<script>
+const API = window.location.origin + '/api/v1';
+let sessionId = null;
+let sending = false;
+
+function sendQuick(text) {
+  document.getElementById('userInput').value = text;
+  sendMessage();
+}
+
+async function sendMessage() {
+  if (sending) return;
+  const input = document.getElementById('userInput');
+  const query = input.value.trim();
+  if (!query) return;
+
+  sending = true;
+  document.getElementById('sendBtn').disabled = true;
+  input.value = '';
+
+  addMessage('user', query);
+  showTyping(true);
+
+  try {
+    const body = { user_id: 'widget_user', query, authenticated: true, metadata: { source: 'widget' } };
+    if (sessionId) body.session_id = sessionId;
+
+    const resp = await fetch(`${API}/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = await resp.json();
+
+    if (!resp.ok) {
+      addMessage('assistant', `抱歉，系统出错了：${data.detail || '请稍后重试'}`);
+    } else {
+      sessionId = data.session_id;
+      addMessage('assistant', data.response);
+    }
+  } catch (err) {
+    addMessage('assistant', '抱歉，网络连接异常，请检查网络后重试。');
+  }
+
+  showTyping(false);
+  sending = false;
+  document.getElementById('sendBtn').disabled = false;
+  input.focus();
+}
+
+function addMessage(role, text) {
+  const container = document.getElementById('messages');
+  const welcome = container.querySelector('.welcome');
+  if (welcome) welcome.remove();
+
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  const time = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+  div.innerHTML = `<div class="bubble">${escapeHtml(text)}</div><div class="time">${time}</div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function showTyping(show) {
+  document.getElementById('typing').classList.toggle('show', show);
+  if (show) document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+}
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+</script>
+</body>
+</html>
